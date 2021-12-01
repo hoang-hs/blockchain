@@ -1,20 +1,30 @@
 package main
 
 import (
-	"fmt"
-	"go_blockchain/block"
+	"go_blockchain/log"
+	"strconv"
 )
 
+func init() {
+	l, err := log.NewLogger()
+	if err != nil {
+		panic(err)
+	}
+	log.RegisterGlobal(l)
+}
+
 func main() {
-	bc := block.NewBlockchain()
+	bc := NewBlockchain()
 
 	bc.AddBlock("Send 1 BTC to Ivan")
 	bc.AddBlock("Send 2 more BTC to Ivan")
 
 	for _, bl := range bc.Blocks {
-		fmt.Printf("Prev. hash: %x\n", bl.PrevBlockHash)
-		fmt.Printf("Data: %s\n", bl.Data)
-		fmt.Printf("Hash: %x\n", bl.Hash)
-		fmt.Println()
+		log.Infof("Prev. hash: %x", bl.PrevBlockHash)
+		log.Infof("Data: %s", bl.Data)
+		log.Infof("Hash: %x", bl.Hash)
+		pow := NewProofOfWork(bl)
+		log.Infof("validate: %s\n", strconv.FormatBool(pow.Validate()))
 	}
+
 }
